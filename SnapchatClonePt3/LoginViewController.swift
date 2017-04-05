@@ -42,7 +42,26 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         guard let emailText = emailField.text else { return }
         guard let passwordText = passwordField.text else { return }
         
-        // YOUR CODE HERE
+        if emailText != "" && passwordText != ""{ //make sure the fields are not empty
+            FIRAuth.auth()?.signIn(withEmail: emailText, password: passwordText, completion: {(user, error) in
+                if error == nil{
+                    self.performSegue(withIdentifier: "loginToMain", sender: nil)
+                }else{
+                    let alert = UIAlertController(title: "Error", message: "Sign in failed, try again", preferredStyle: .alert)
+                    let action = UIAlertAction(title: "OK", style: .default, handler: nil)
+                    alert.addAction(action)
+                    self.present(alert, animated: true, completion: nil)
+                }
+            })
+            
+        } else{ // one of the fields was left empty
+            let alert = UIAlertController(title: "Error", message: "Enter Email and Password", preferredStyle: .alert)
+            let action = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alert.addAction(action)
+            self.present(alert, animated: true, completion: nil)
+            
+        }
+        
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

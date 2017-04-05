@@ -39,7 +39,35 @@ class SignupViewController: UIViewController, UITextFieldDelegate {
         guard let password = passwordField.text else { return }
         guard let name = nameField.text else { return }
         
-        // YOUR CODE HERE
+        // make sure that user entered both email and password
+        if email != "" && password != "" && name != ""{
+            FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user, error) in
+                if error == nil{ // the user was created successfully
+                    // authenticates the user
+                    FIREmailPasswordAuthProvider.credential(withEmail: email, password: password)
+                    if let user = user {
+                        let changeRequest = user.profileChangeRequest()
+                        changeRequest.displayName = name
+                    }
+
+                    self.dismiss(animated: true, completion: nil)
+                } else {
+                    print(error)
+                }
+            })
+        }else if email == "" || password == ""{ //either email or password field is empty
+            let alert = UIAlertController(title: "Error", message: "Enter Email and Password", preferredStyle: .alert)
+            let action = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alert.addAction(action)
+            self.present(alert, animated: true, completion: nil)
+        }else if email.characters.count < 6 {
+            let alert = UIAlertController(title: "Error", message: "Password is less than 6 characters long", preferredStyle: .alert)
+            let action = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alert.addAction(action)
+            self.present(alert, animated: true, completion: nil)
+        }
+        
+            
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
