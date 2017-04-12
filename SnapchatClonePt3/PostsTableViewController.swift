@@ -51,7 +51,7 @@ class PostsTableViewController: UIViewController, UITableViewDelegate, UITableVi
         (Hint): This should be pretty simple.
     */
     override func viewWillAppear(_ animated: Bool) {
-        // YOUR CODE HERE
+        updateData()
     }
 
     override func didReceiveMemoryWarning() {
@@ -71,7 +71,20 @@ class PostsTableViewController: UIViewController, UITableViewDelegate, UITableVi
      
     */
     func updateData() {
-        // YOUR CODE HERE
+        getPosts(user: currentUser, completion: {(posts) in
+            clearThreads()
+            for post in posts!{
+                addPostToThread(post: post)
+                getDataFromPath(path: post.postImagePath, completion: {(idata) in
+                    if let data = idata{
+                        let imgData = UIImage(data: data)
+                        self.loadedImagesById[post.postId] = imgData
+                    }
+                })
+            }
+        })
+        postTableView.reloadData()
+    
     }
     
     // MARK: Custom methods (relating to UI)
@@ -138,14 +151,13 @@ class PostsTableViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     
-    // TODO: add the selected post as one of the current user's read posts
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let post = getPostFromIndexPath(indexPath: indexPath), !post.read {
             presentPostImage(forPost: post)
             post.read = true
             
-            // YOUR CODE HERE
-            
+            //add the selected post as one of the current user's read posts
+            currentUser.addNewReadPost(postID: post.postId)
             tableView.reloadRows(at: [indexPath], with: .automatic)
         }
      

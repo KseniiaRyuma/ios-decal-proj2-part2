@@ -44,10 +44,13 @@ class SignupViewController: UIViewController, UITextFieldDelegate {
             FIRAuth.auth()?.createUser(withEmail: email, password: password, completion: { (user, error) in
                 if error == nil{ // the user was created successfully
                     // authenticates the user
-                    FIREmailPasswordAuthProvider.credential(withEmail: email, password: password)
+//                    FIREmailPasswordAuthProvider.credential(withEmail: email, password: password)
                     if let user = user {
                         let changeRequest = user.profileChangeRequest()
                         changeRequest.displayName = name
+                        changeRequest.commitChanges(completion: { (error) in
+                            self.performSegue(withIdentifier: "signupToMain", sender: self)
+                        })
                     }
 
                     self.dismiss(animated: true, completion: nil)
